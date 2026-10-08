@@ -41,6 +41,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Calisan.cs" />
+    <Compile Include="Entities\CalismaSaati.cs" />
+    <Compile Include="Entities\Doktor.cs" />
+    <Compile Include="Entities\DoktorHizmet.cs" />
+    <Compile Include="Entities\Hasta.cs" />
+    <Compile Include="Entities\Hastane.cs" />
+    <Compile Include="Entities\Hizmet.cs" />
+    <Compile Include="Entities\Kisi.cs" />
+    <Compile Include="Entities\Musaitlik.cs" />
+    <Compile Include="Entities\Poliklinik.cs" />
+    <Compile Include="Entities\Randevu.cs" />
+    <Compile Include="Entities\SaglikPersoneli.cs" />
+    <Compile Include="Entities\Yonetici.cs" />
+    <Compile Include="Entities\ZamanDilimi.cs" />
+    <Compile Include="Enums\RandevuDurum.cs" />
+    <Compile Include="Enums\Roller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
