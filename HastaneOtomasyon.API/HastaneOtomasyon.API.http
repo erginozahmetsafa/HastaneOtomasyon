@@ -1,0 +1,6 @@
+@HastaneOtomasyon.API_HostAddress = http://localhost:5004
+
+GET {{HastaneOtomasyon.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

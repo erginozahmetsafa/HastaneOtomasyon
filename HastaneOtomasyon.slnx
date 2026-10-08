@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HastaneOtomasyon.API/HastaneOtomasyon.API.csproj" />
+  <Project Path="HastaneOtomasyon.Core/HastaneOtomasyon.Core.csproj" />
+  <Project Path="HastaneOtomasyon.Data/HastaneOtomasyon.Data.csproj" />
+  <Project Path="HastaneOtomasyon.Service/HastaneOtomasyon.Service.csproj" />
+</Solution>
