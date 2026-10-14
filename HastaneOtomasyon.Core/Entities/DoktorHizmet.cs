@@ -1,14 +1,13 @@
-﻿namespace HastaneOtomasyon.Core.Entities
-{
-	// Doktor ile Hizmet arasındaki çoktan çoğa ilişki tablosu.
-	public class DoktorHizmet
-	{
-		public int DoktorId { get; set; } // Foreign Key
-		public Doktor Doktor { get; set; } // Navigation Property
-		public int HizmetId { get; set; } // Foreign Key
-		public Hizmet Hizmet { get; set; } // Navigation Property
+﻿namespace HastaneOtomasyon.Core.Entities;
 
-		// Doktora özel ücret; boşsa Hizmet.Ucret geçerlidir.
-		public decimal? OzelUcret { get; set; }
-	}
+// Doktor ile Hizmet arasındaki çoktan çoğa ilişki. Anahtar: (DoktorId, HizmetId).
+public class DoktorHizmet
+{
+	public int DoktorId { get; set; }
+	public Doktor Doktor { get; set; } = null!;
+	public int HizmetId { get; set; }
+	public Hizmet Hizmet { get; set; } = null!;
+
+	// Doktora özel ücret; boşsa Hizmet.Ucret geçerlidir.
+	public decimal? OzelUcret { get; set; }
 }

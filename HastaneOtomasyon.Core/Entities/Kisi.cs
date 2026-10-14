@@ -1,19 +1,17 @@
 ﻿using HastaneOtomasyon.Core.Enums;
 
-namespace HastaneOtomasyon.Core.Entities
-{
-	// Tüm kullanıcıların ortak atası. Doğrudan örneklenemez.
-	public abstract class Kisi
-	{
-		public int Id { get; set; }
-		public string TcKimlikNo { get; set; }
-		public string Ad { get; set; }
-		public string Soyad { get; set; }
-		public string Email { get; set; }
-		public string Telefon { get; set; }
-		public string SifreHash { get; set; }
+namespace HastaneOtomasyon.Core.Entities;
 
-		// Her alt sınıf kendi rolünü belirtir (çok biçimlilik).
-		public abstract Roller Rol { get; }
-	}
+// Tüm kullanıcıların ortak atası. Doğrudan örneklenemez.
+public abstract class Kisi : BaseEntity
+{
+	public string TcKimlikNo { get; set; } = string.Empty;
+	public string Ad { get; set; } = string.Empty;
+	public string Soyad { get; set; } = string.Empty;
+	public string Email { get; set; } = string.Empty;
+	public string? Telefon { get; set; }
+	public string SifreHash { get; set; } = string.Empty;
+
+	// Her alt sınıf kendi rolünü belirtir (çok biçimlilik).
+	public abstract Roller Rol { get; }
 }

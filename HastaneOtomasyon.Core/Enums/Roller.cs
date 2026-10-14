@@ -1,10 +1,9 @@
-﻿namespace HastaneOtomasyon.Core.Enums
+﻿namespace HastaneOtomasyon.Core.Enums;
+
+public enum Roller
 {
-	public enum Roller
-	{
-		Hasta,
-		Doktor,
-		SaglikPersoneli,
-		Yonetici
-	}
+	Hasta = 1,
+	Doktor = 2,
+	SaglikPersoneli = 3,
+	Yonetici = 4
 }

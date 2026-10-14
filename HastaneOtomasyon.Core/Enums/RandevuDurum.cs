@@ -1,11 +1,10 @@
-﻿namespace HastaneOtomasyon.Core.Enums
+﻿namespace HastaneOtomasyon.Core.Enums;
+
+public enum RandevuDurum
 {
-	public enum RandevuDurum
-	{
-		Bekliyor,    // Hasta oluşturdu, onay bekleniyor
-		Onaylandi,   // Doktor/yönetici onayladı
-		Reddedildi,  // Doktor/yönetici reddetti
-		IptalEdildi, // Hasta veya kurum iptal etti
-		Tamamlandi   // Muayene/işlem gerçekleşti
-	}
+	Bekliyor = 1,    // Hasta oluşturdu, onay bekleniyor
+	Onaylandi = 2,   // Doktor/yönetici onayladı
+	Reddedildi = 3,  // Doktor/yönetici reddetti
+	IptalEdildi = 4, // Hasta veya kurum iptal etti
+	Tamamlandi = 5   // Muayene/işlem gerçekleşti
 }

@@ -1,17 +1,13 @@
-﻿using System.Collections.Generic;
+﻿namespace HastaneOtomasyon.Core.Entities;
 
-namespace HastaneOtomasyon.Core.Entities
+// Hastane bölümü (Kardiyoloji, Radyoloji, Laboratuvar vb.)
+public class Poliklinik : BaseEntity
 {
-	// Hastane bölümü (Kardiyoloji, Radyoloji, Laboratuvar vb.)
-	public class Poliklinik
-	{
-		public int Id { get; set; }
-		public string Ad { get; set; }
-		public string Aciklama { get; set; }
-		public int HastaneId { get; set; } // Foreign Key
-		public Hastane Hastane { get; set; } // Navigation Property
+	public string Ad { get; set; } = string.Empty;
+	public string? Aciklama { get; set; }
+	public int HastaneId { get; set; }
+	public Hastane Hastane { get; set; } = null!;
 
-		public ICollection<Doktor> Doktorlar { get; set; } = new List<Doktor>();
-		public ICollection<Hizmet> Hizmetler { get; set; } = new List<Hizmet>();
-	}
+	public ICollection<Doktor> Doktorlar { get; set; } = [];
+	public ICollection<Hizmet> Hizmetler { get; set; } = [];
 }
