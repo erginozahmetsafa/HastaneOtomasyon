@@ -13,4 +13,7 @@ public interface IDoktorRepository : IGenericRepository<Doktor>
 
 	// Doktor bu hizmeti sunmuyorsa null döner; Hizmet bilgisi dahil gelir (süre/ücret hesabı için).
 	Task<DoktorHizmet?> GetDoktorHizmetAsync(int doktorId, int hizmetId, CancellationToken ct = default);
+
+	Task DoktorHizmetEkleAsync(DoktorHizmet doktorHizmet, CancellationToken ct = default);
+	void DoktorHizmetKaldir(DoktorHizmet doktorHizmet);
 }

@@ -30,4 +30,11 @@ public class DoktorRepository(AppDbContext context) : GenericRepository<Doktor>(
 		Context.DoktorHizmetler.AsNoTracking()
 			.Include(dh => dh.Hizmet)
 			.FirstOrDefaultAsync(dh => dh.DoktorId == doktorId && dh.HizmetId == hizmetId, ct);
+
+	public async Task DoktorHizmetEkleAsync(DoktorHizmet doktorHizmet, CancellationToken ct = default) =>
+		await Context.DoktorHizmetler.AddAsync(doktorHizmet, ct);
+
+	// Yalnızca anahtarlar kullanılır; ilişkili Hizmet nesnesi takibe alınmaz.
+	public void DoktorHizmetKaldir(DoktorHizmet doktorHizmet) =>
+		Context.DoktorHizmetler.Remove(new DoktorHizmet { DoktorId = doktorHizmet.DoktorId, HizmetId = doktorHizmet.HizmetId });
 }

@@ -1,4 +1,7 @@
-﻿using HastaneOtomasyon.Data;
+﻿using HastaneOtomasyon.API.Security;
+using HastaneOtomasyon.Core.Services;
+using HastaneOtomasyon.Data;
+using HastaneOtomasyon.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("SqlServer")
 	?? throw new InvalidOperationException("'SqlServer' bağlantı cümlesi bulunamadı.");
 builder.Services.AddDataLayer(connectionString);
+builder.Services.AddServiceLayer();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAktifKullanici, AktifKullanici>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -395,6 +395,25 @@ namespace HastaneOtomasyon.Data.Migrations
                     b.HasDiscriminator().HasValue(1);
                 });
 
+            modelBuilder.Entity("HastaneOtomasyon.Core.Entities.SistemYoneticisi", b =>
+                {
+                    b.HasBaseType("HastaneOtomasyon.Core.Entities.Kisi");
+
+                    b.HasDiscriminator().HasValue(5);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ad = "Sistem",
+                            Email = "admin@hastane.local",
+                            OlusturmaTarihi = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SifreHash = "100000.umQQHF/mQNVupUfcYdQhBg==.lhe8lsA0rlUwlub9rCfJCEBaBihmStrWPYvp/52tF9k=",
+                            Soyad = "Yöneticisi",
+                            TcKimlikNo = "10000000146"
+                        });
+                });
+
             modelBuilder.Entity("HastaneOtomasyon.Core.Entities.Doktor", b =>
                 {
                     b.HasBaseType("HastaneOtomasyon.Core.Entities.Calisan");
@@ -527,7 +546,7 @@ namespace HastaneOtomasyon.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HastaneOtomasyon.Core.Entities.Calisan", "Onaylayan")
+                    b.HasOne("HastaneOtomasyon.Core.Entities.Kisi", "Onaylayan")
                         .WithMany()
                         .HasForeignKey("OnaylayanId")
                         .OnDelete(DeleteBehavior.Restrict);

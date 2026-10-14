@@ -4,8 +4,11 @@ namespace HastaneOtomasyon.Core.Repositories;
 
 public interface IRandevuRepository : IGenericRepository<Randevu>
 {
-	// Hasta, doktor (poliklinikle) ve hizmet bilgisiyle birlikte getirir.
+	// Hasta, doktor (poliklinikle) ve hizmet bilgisiyle birlikte getirir. Liste metotları da aynı bilgileri içerir.
 	Task<Randevu?> GetDetayAsync(int id, CancellationToken ct = default);
+
+	// Durum değişikliği için takip edilen kayıt; yetki kontrolü için doktor bilgisi dahildir.
+	Task<Randevu?> GetIslemIcinAsync(int id, CancellationToken ct = default);
 
 	Task<IReadOnlyList<Randevu>> GetByDoktorAsync(int doktorId, DateTime baslangic, DateTime bitis, CancellationToken ct = default);
 	Task<IReadOnlyList<Randevu>> GetByHastaAsync(int hastaId, CancellationToken ct = default);

@@ -16,7 +16,8 @@ public class KisiConfiguration : IEntityTypeConfiguration<Kisi>
 			.HasValue<Hasta>(Roller.Hasta)
 			.HasValue<Doktor>(Roller.Doktor)
 			.HasValue<SaglikPersoneli>(Roller.SaglikPersoneli)
-			.HasValue<Yonetici>(Roller.Yonetici);
+			.HasValue<Yonetici>(Roller.Yonetici)
+			.HasValue<SistemYoneticisi>(Roller.SistemYoneticisi);
 
 		builder.Ignore(k => k.Rol);
 
