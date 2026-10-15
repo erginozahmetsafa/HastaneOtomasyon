@@ -19,6 +19,18 @@ public record RandevuOlusturDto
 	public string? HastaNotu { get; init; }
 }
 
+public record RedDto
+{
+	[Required, StringLength(500)]
+	public string Neden { get; init; } = string.Empty;
+}
+
+public record IptalDto
+{
+	[StringLength(500)]
+	public string? Neden { get; init; }
+}
+
 // ---- Çıktı ----
 
 public record RandevuDto(

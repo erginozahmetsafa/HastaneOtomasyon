@@ -24,4 +24,11 @@ public static class DataServiceRegistration
 
 		return services;
 	}
+
+	// Bekleyen migration'ları uygular. Geliştirme ortamında uygulama açılışında çağrılır.
+	public static async Task VeritabaniniGuncelleAsync(this IServiceProvider services, CancellationToken ct = default)
+	{
+		await using var scope = services.CreateAsyncScope();
+		await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync(ct);
+	}
 }

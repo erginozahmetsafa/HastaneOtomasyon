@@ -7,16 +7,14 @@ namespace HastaneOtomasyon.API.Security;
 // İsteği yapan kullanıcıyı token claim'lerinden okur. Giriş yapılmamışsa tüm değerler null'dır.
 public class AktifKullanici(IHttpContextAccessor httpContextAccessor) : IAktifKullanici
 {
-	public const string HastaneIdClaim = "hastane_id";
-
 	private ClaimsPrincipal? Kullanici => httpContextAccessor.HttpContext?.User;
 
-	public int? Id => SayiClaim(ClaimTypes.NameIdentifier);
+	public int? Id => SayiClaim(ClaimTipleri.Id);
 
 	public Roller? Rol =>
-		Enum.TryParse<Roller>(Kullanici?.FindFirstValue(ClaimTypes.Role), out var rol) ? rol : null;
+		Enum.TryParse<Roller>(Kullanici?.FindFirstValue(ClaimTipleri.Rol), out var rol) ? rol : null;
 
-	public int? HastaneId => SayiClaim(HastaneIdClaim);
+	public int? HastaneId => SayiClaim(ClaimTipleri.HastaneId);
 
 	private int? SayiClaim(string tip) =>
 		int.TryParse(Kullanici?.FindFirstValue(tip), out var deger) ? deger : null;

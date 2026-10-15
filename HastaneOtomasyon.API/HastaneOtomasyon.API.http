@@ -1,6 +1,106 @@
-@HastaneOtomasyon.API_HostAddress = http://localhost:5004
+# Örnek akış: Visual Studio'da her isteğin üstündeki "Send Request" ile sırayla çalıştırın.
+# Giriş yanıtlarındaki token değerini ilgili değişkene yapıştırın.
 
-GET {{HastaneOtomasyon.API_HostAddress}}/weatherforecast/
-Accept: application/json
+@host = http://localhost:5004
+@adminToken = BURAYA_ADMIN_TOKEN
+@yoneticiToken = BURAYA_YONETICI_TOKEN
+@doktorToken = BURAYA_DOKTOR_TOKEN
+@hastaToken = BURAYA_HASTA_TOKEN
 
-###
+### 1) Sistem yöneticisi girişi (varsayılan hesap)
+POST {{host}}/api/hesap/giris
+Content-Type: application/json
+
+{ "email": "admin@hastane.local", "sifre": "Admin123!" }
+
+### 2) Hastane oluştur (sistem yöneticisi)
+POST {{host}}/api/hastaneler
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "ad": "Sakarya Merkez Hastanesi", "adres": "Adapazarı / Sakarya", "telefon": "02642223344" }
+
+### 3) Hastane yöneticisi ata (sistem yöneticisi)
+POST {{host}}/api/personel/yoneticiler
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "tcKimlikNo": "20000000000", "ad": "Ayşe", "soyad": "Yılmaz", "email": "yonetici@hastane.com", "sifre": "Sifre123", "hastaneId": 1 }
+
+### 4) Hastane yöneticisi girişi
+POST {{host}}/api/hesap/giris
+Content-Type: application/json
+
+{ "email": "yonetici@hastane.com", "sifre": "Sifre123" }
+
+### 5) Çalışma saati ekle (yönetici)
+POST {{host}}/api/hastaneler/1/calisma-saatleri
+Authorization: Bearer {{yoneticiToken}}
+Content-Type: application/json
+
+{ "gun": "Monday", "baslangic": "08:00:00", "bitis": "17:00:00" }
+
+### 6) Poliklinik ekle (yönetici)
+POST {{host}}/api/poliklinikler
+Authorization: Bearer {{yoneticiToken}}
+Content-Type: application/json
+
+{ "hastaneId": 1, "ad": "Kardiyoloji" }
+
+### 7) Hizmet ekle (yönetici)
+POST {{host}}/api/hizmetler
+Authorization: Bearer {{yoneticiToken}}
+Content-Type: application/json
+
+{ "poliklinikId": 1, "ad": "Genel Muayene", "sureDakika": 20, "ucret": 500 }
+
+### 8) Doktor ekle (yönetici)
+POST {{host}}/api/doktorlar
+Authorization: Bearer {{yoneticiToken}}
+Content-Type: application/json
+
+{ "tcKimlikNo": "30000000000", "ad": "Ali", "soyad": "Kaya", "email": "dr.ali@hastane.com", "sifre": "Sifre123", "hastaneId": 1, "poliklinikId": 1, "uzmanlikAlani": "Kardiyoloji", "unvan": "Uzm. Dr." }
+
+### 9) Doktora hizmet ata (yönetici)
+POST {{host}}/api/doktorlar/2/hizmetler
+Authorization: Bearer {{yoneticiToken}}
+Content-Type: application/json
+
+{ "hizmetId": 1 }
+
+### 10) Doktor girişi
+POST {{host}}/api/hesap/giris
+Content-Type: application/json
+
+{ "email": "dr.ali@hastane.com", "sifre": "Sifre123" }
+
+### 11) Müsaitlik ekle (doktor)
+POST {{host}}/api/doktorlar/2/musaitlikler
+Authorization: Bearer {{doktorToken}}
+Content-Type: application/json
+
+{ "gun": "Monday", "baslangic": "09:00:00", "bitis": "12:00:00" }
+
+### 12) Hasta kaydı (herkese açık, token döner)
+POST {{host}}/api/hesap/kayit
+Content-Type: application/json
+
+{ "tcKimlikNo": "50000000000", "ad": "Mehmet", "soyad": "Can", "email": "hasta@ornek.com", "sifre": "Sifre123", "dogumTarihi": "1990-05-05" }
+
+### 13) Uygun saatler (herkese açık) — tarihi gelecekteki bir pazartesiyle değiştirin
+GET {{host}}/api/doktorlar/2/uygun-saatler?hizmetId=1&tarih=2026-10-19
+
+### 14) Randevu al (hasta)
+POST {{host}}/api/randevular
+Authorization: Bearer {{hastaToken}}
+Content-Type: application/json
+
+{ "doktorId": 2, "hizmetId": 1, "baslangic": "2026-10-19T09:00:00", "hastaNotu": "Kontrol" }
+
+### 15) Randevuyu onayla (doktor)
+POST {{host}}/api/randevular/1/onayla
+Authorization: Bearer {{doktorToken}}
+
+### 16) Hastanın randevuları
+GET {{host}}/api/randevular/benim
+Authorization: Bearer {{hastaToken}}

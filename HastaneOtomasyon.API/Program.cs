@@ -1,38 +1,34 @@
-﻿using HastaneOtomasyon.API.Security;
-using HastaneOtomasyon.Core.Services;
+﻿using HastaneOtomasyon.API.Extensions;
 using HastaneOtomasyon.Data;
 using HastaneOtomasyon.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 var connectionString = builder.Configuration.GetConnectionString("SqlServer")
 	?? throw new InvalidOperationException("'SqlServer' bağlantı cümlesi bulunamadı.");
+
 builder.Services.AddDataLayer(connectionString);
 builder.Services.AddServiceLayer();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IAktifKullanici, AktifKullanici>();
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddApiLayer(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+app.UseStatusCodePages(); // 401/403/404 gibi gövdesiz yanıtlar da ProblemDetails döner
+
 if (app.Environment.IsDevelopment())
 {
+	await app.Services.VeritabaniniGuncelleAsync();
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
+
+// Entegrasyon testlerinde WebApplicationFactory<Program> için erişilebilir olmalı.
+public partial class Program;
