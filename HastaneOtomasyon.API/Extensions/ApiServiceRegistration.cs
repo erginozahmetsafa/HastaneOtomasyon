@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using HastaneOtomasyon.API.ErrorHandling;
 using HastaneOtomasyon.API.Security;
 using HastaneOtomasyon.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
@@ -28,6 +31,8 @@ public static class ApiServiceRegistration
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 
 		services.AddJwtKimlikDogrulama(configuration);
+		services.AddHizSinirlama(configuration);
+		services.AddCorsPolitikasi(configuration);
 		services.AddSwaggerDokumantasyonu();
 
 		return services;
@@ -61,11 +66,69 @@ public static class ApiServiceRegistration
 					NameClaimType = ClaimTipleri.AdSoyad,
 					RoleClaimType = ClaimTipleri.Rol
 				};
+				options.Events = new JwtBearerEvents { OnTokenValidated = OturumDogrulama.TokenDogrulandiAsync };
 			});
 
 		// Varsayılan olarak her uç nokta giriş ister; herkese açık olanlar [AllowAnonymous] ile işaretlenir.
 		services.AddAuthorizationBuilder()
 			.SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+	}
+
+	private static void AddHizSinirlama(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.AddOptions<HizSinirlamaAyarlari>()
+			.Bind(configuration.GetSection(HizSinirlamaAyarlari.Bolum))
+			.ValidateDataAnnotations()
+			.ValidateOnStart();
+
+		services.AddRateLimiter(o =>
+		{
+			o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+			// Sabit pencere, istemci IP'si başına ayrı sayaç.
+			o.AddPolicy(HizSinirlamaPolitikalari.HesapIslemleri, httpContext =>
+			{
+				var ayarlar = httpContext.RequestServices.GetRequiredService<IOptions<HizSinirlamaAyarlari>>().Value;
+				return RateLimitPartition.GetFixedWindowLimiter(
+					httpContext.Connection.RemoteIpAddress?.ToString() ?? "bilinmiyor",
+					_ => new FixedWindowRateLimiterOptions
+					{
+						PermitLimit = ayarlar.IzinSayisi,
+						Window = TimeSpan.FromSeconds(ayarlar.PencereSaniye),
+						QueueLimit = 0
+					});
+			});
+
+			o.OnRejected = async (context, ct) =>
+			{
+				if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var bekleme))
+					context.HttpContext.Response.Headers.RetryAfter =
+						((int)Math.Ceiling(bekleme.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
+
+				await context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>().WriteAsync(new ProblemDetailsContext
+				{
+					HttpContext = context.HttpContext,
+					ProblemDetails =
+					{
+						Status = StatusCodes.Status429TooManyRequests,
+						Title = "Çok fazla deneme",
+						Detail = "Kısa sürede çok fazla istek yapıldı. Lütfen biraz bekleyip tekrar deneyin."
+					}
+				});
+			};
+		});
+	}
+
+	// Tarayıcıdaki bir arayüzün API'yi çağırabilmesi için izin verilen adresler appsettings'ten okunur.
+	private static void AddCorsPolitikasi(this IServiceCollection services, IConfiguration configuration)
+	{
+		var izinliKaynaklar = configuration.GetSection("Cors:IzinliKaynaklar").Get<string[]>() ?? [];
+
+		services.AddCors(o => o.AddDefaultPolicy(policy => policy
+			.WithOrigins(izinliKaynaklar)
+			.AllowAnyHeader()
+			.AllowAnyMethod()
+			.WithExposedHeaders("Location", "Retry-After")));
 	}
 
 	private static void AddSwaggerDokumantasyonu(this IServiceCollection services)

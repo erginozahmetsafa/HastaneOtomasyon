@@ -10,4 +10,5 @@ public static class ClaimTipleri
 	public const string AdSoyad = JwtRegisteredClaimNames.Name;
 	public const string Email = JwtRegisteredClaimNames.Email;
 	public const string HastaneId = "hastane_id";
+	public const string GuvenlikDamgasi = "damga";
 }

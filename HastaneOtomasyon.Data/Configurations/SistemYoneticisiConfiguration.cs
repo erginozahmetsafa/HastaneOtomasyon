@@ -18,6 +18,8 @@ public class SistemYoneticisiConfiguration : IEntityTypeConfiguration<SistemYone
 			Soyad = "Yöneticisi",
 			Email = "admin@hastane.local",
 			SifreHash = "100000.umQQHF/mQNVupUfcYdQhBg==.lhe8lsA0rlUwlub9rCfJCEBaBihmStrWPYvp/52tF9k=",
+			AktifMi = true,
+			GuvenlikDamgasi = new Guid("a6e9f98a-1598-400a-a34a-c019640bcf19"), // seed verisi sabit olmalı
 			OlusturmaTarihi = new DateTime(2026, 10, 15, 0, 0, 0, DateTimeKind.Utc)
 		});
 	}

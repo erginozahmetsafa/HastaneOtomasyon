@@ -104,3 +104,18 @@ Authorization: Bearer {{doktorToken}}
 ### 16) Hastanın randevuları
 GET {{host}}/api/randevular/benim
 Authorization: Bearer {{hastaToken}}
+
+### 17) Şifre değiştir (giriş yapmış herkes) — yanıttaki yeni token kullanılmalı; eski token'lar geçersiz olur
+POST {{host}}/api/hesap/sifre-degistir
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "mevcutSifre": "Admin123!", "yeniSifre": "YeniGucluSifre1" }
+
+### 18) Personeli pasifleştir (yönetici) — doktorsa ileri tarihli randevuları iptal edilir
+POST {{host}}/api/personel/2/pasiflestir
+Authorization: Bearer {{yoneticiToken}}
+
+### 19) Personeli yeniden aktifleştir (yönetici)
+POST {{host}}/api/personel/2/aktiflestir
+Authorization: Bearer {{yoneticiToken}}

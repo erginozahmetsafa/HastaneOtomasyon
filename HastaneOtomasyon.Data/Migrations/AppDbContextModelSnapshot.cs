@@ -171,6 +171,9 @@ namespace HastaneOtomasyon.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("AktifMi")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -178,6 +181,9 @@ namespace HastaneOtomasyon.Data.Migrations
 
                     b.Property<DateTime?>("GuncellemeTarihi")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("GuvenlikDamgasi")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("KisiTipi")
                         .HasColumnType("int");
@@ -406,7 +412,9 @@ namespace HastaneOtomasyon.Data.Migrations
                         {
                             Id = 1,
                             Ad = "Sistem",
+                            AktifMi = true,
                             Email = "admin@hastane.local",
+                            GuvenlikDamgasi = new Guid("a6e9f98a-1598-400a-a34a-c019640bcf19"),
                             OlusturmaTarihi = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             SifreHash = "100000.umQQHF/mQNVupUfcYdQhBg==.lhe8lsA0rlUwlub9rCfJCEBaBihmStrWPYvp/52tF9k=",
                             Soyad = "Yöneticisi",

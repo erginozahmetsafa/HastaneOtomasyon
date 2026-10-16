@@ -14,6 +14,9 @@ public interface IRandevuRepository : IGenericRepository<Randevu>
 	Task<IReadOnlyList<Randevu>> GetByHastaAsync(int hastaId, CancellationToken ct = default);
 	Task<IReadOnlyList<Randevu>> GetOnayBekleyenlerAsync(int hastaneId, CancellationToken ct = default);
 
+	// Doktorun henüz başlamamış bekleyen/onaylı randevuları; durum değişikliği için takip edilir.
+	Task<IReadOnlyList<Randevu>> GetGelecekAktifRandevularAsync(int doktorId, DateTime simdi, CancellationToken ct = default);
+
 	// Yalnızca aktif (bekleyen/onaylı) randevular dikkate alınır.
 	// Güncelleme senaryosunda randevunun kendisi haricRandevuId ile dışarıda bırakılır.
 	Task<bool> DoktorCakismaVarMiAsync(int doktorId, DateTime baslangic, DateTime bitis, int? haricRandevuId = null, CancellationToken ct = default);

@@ -79,14 +79,20 @@ internal sealed class RandevuService(
 		if (!await musaitlikRepository.MusaitMiAsync(randevu.DoktorId, randevu.Baslangic.DayOfWeek, randevu.Baslangic.TimeOfDay, randevu.Bitis.TimeOfDay, ct))
 			throw new IsKuraliException("Doktor seçilen saatte müsait değil.");
 
-		if (await randevuRepository.DoktorCakismaVarMiAsync(randevu.DoktorId, randevu.Baslangic, randevu.Bitis, ct: ct))
-			throw new IsKuraliException("Doktorun bu saatte başka bir randevusu var.");
+		// Aynı doktora veya aynı hastaya gelen eşzamanlı istekler sırayla işlenir;
+		// çakışma kontrolü ile kayıt arasına başka bir randevu giremez.
+		string[] kilitler = [$"randevu:doktor:{randevu.DoktorId}", $"randevu:hasta:{hastaId}"];
+		await unitOfWork.KilitliIslemAsync(kilitler, async () =>
+		{
+			if (await randevuRepository.DoktorCakismaVarMiAsync(randevu.DoktorId, randevu.Baslangic, randevu.Bitis, ct: ct))
+				throw new IsKuraliException("Doktorun bu saatte başka bir randevusu var.");
 
-		if (await randevuRepository.HastaCakismaVarMiAsync(hastaId, randevu.Baslangic, randevu.Bitis, ct: ct))
-			throw new IsKuraliException("Bu saatte başka bir randevunuz var.");
+			if (await randevuRepository.HastaCakismaVarMiAsync(hastaId, randevu.Baslangic, randevu.Bitis, ct: ct))
+				throw new IsKuraliException("Bu saatte başka bir randevunuz var.");
 
-		await randevuRepository.AddAsync(randevu, ct);
-		await unitOfWork.SaveChangesAsync(ct);
+			await randevuRepository.AddAsync(randevu, ct);
+			await unitOfWork.SaveChangesAsync(ct);
+		}, ct);
 
 		return (await randevuRepository.GetDetayAsync(randevu.Id, ct))!.ToDto();
 	}
@@ -167,11 +173,14 @@ internal sealed class RandevuService(
 			throw new YetkisizIslemException();
 	}
 
-	// Doktor bu hizmeti sunmuyorsa veya hizmet pasifse randevu alınamaz.
+	// Doktor bu hizmeti sunmuyorsa, doktor pasifse veya hizmet pasifse randevu alınamaz.
 	private async Task<DoktorHizmet> SunulanHizmetiGetirAsync(int doktorId, int hizmetId, CancellationToken ct)
 	{
 		var doktorHizmet = await doktorRepository.GetDoktorHizmetAsync(doktorId, hizmetId, ct)
 			?? throw new IsKuraliException("Seçilen doktor bu hizmeti sunmuyor.");
+
+		if (!doktorHizmet.Doktor.AktifMi)
+			throw new IsKuraliException("Seçilen doktor şu anda randevu kabul etmiyor.");
 
 		if (!doktorHizmet.Hizmet.AktifMi)
 			throw new IsKuraliException("Seçilen hizmet şu anda verilmiyor.");

@@ -9,8 +9,11 @@ internal static class DtoMapper
 	public static KullaniciDto ToKullaniciDto(this Kisi k) =>
 		new(k.Id, k.Ad, k.Soyad, k.Email, k.Rol, (k as Calisan)?.HastaneId);
 
+	public static OturumBilgisi ToOturumBilgisi(this Kisi k) =>
+		new(k.ToKullaniciDto(), k.GuvenlikDamgasi);
+
 	public static PersonelDto ToPersonelDto(this Calisan c) =>
-		new(c.Id, c.Ad, c.Soyad, c.Email, c.Telefon, c.Rol, c.HastaneId);
+		new(c.Id, c.Ad, c.Soyad, c.Email, c.Telefon, c.Rol, c.HastaneId, c.AktifMi);
 
 	public static HastaneDto ToDto(this Hastane h) =>
 		new(h.Id, h.Ad, h.Adres, h.Telefon);
@@ -30,7 +33,7 @@ internal static class DtoMapper
 		new(h.Id, h.PoliklinikId, h.Ad, h.Aciklama, h.SureDakika, h.Ucret, h.AktifMi);
 
 	public static DoktorDto ToDto(this Doktor d) =>
-		new(d.Id, d.Ad, d.Soyad, d.Unvan, d.UzmanlikAlani, d.HastaneId, d.PoliklinikId);
+		new(d.Id, d.Ad, d.Soyad, d.Unvan, d.UzmanlikAlani, d.HastaneId, d.PoliklinikId, d.AktifMi);
 
 	public static DoktorDetayDto ToDetayDto(this Doktor d) =>
 		new(d.ToDto(),

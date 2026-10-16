@@ -22,4 +22,23 @@ public class PersonelController(IPersonelService personelService) : ApiControlle
 	[ProducesResponseType<PersonelDto>(StatusCodes.Status201Created)]
 	public async Task<IActionResult> YoneticiEkle(YoneticiKayitDto dto, CancellationToken ct) =>
 		Olusturuldu(await personelService.YoneticiEkleAsync(dto, ct));
+
+	/// <summary>
+	/// Çalışanı pasifleştirir: giriş yapamaz, açık oturumları kapanır, doktorsa listelerde görünmez
+	/// ve ileri tarihli randevuları iptal edilir. Kayıt ve randevu geçmişi korunur.
+	/// </summary>
+	[HttpPost("{id:int}/pasiflestir")]
+	[Authorize(Roles = RolGruplari.Yonetim)]
+	public async Task<PasiflestirmeSonucuDto> Pasiflestir(int id, CancellationToken ct) =>
+		await personelService.PasiflestirAsync(id, ct);
+
+	/// <summary>Pasif çalışanı yeniden aktifleştirir.</summary>
+	[HttpPost("{id:int}/aktiflestir")]
+	[Authorize(Roles = RolGruplari.Yonetim)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	public async Task<IActionResult> Aktiflestir(int id, CancellationToken ct)
+	{
+		await personelService.AktiflestirAsync(id, ct);
+		return NoContent();
+	}
 }

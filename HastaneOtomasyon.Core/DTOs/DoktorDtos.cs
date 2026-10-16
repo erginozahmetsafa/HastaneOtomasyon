@@ -28,7 +28,7 @@ public record DoktorHizmetAtaDto
 
 // ---- Çıktı ----
 
-public record DoktorDto(int Id, string Ad, string Soyad, string? Unvan, string UzmanlikAlani, int HastaneId, int PoliklinikId);
+public record DoktorDto(int Id, string Ad, string Soyad, string? Unvan, string UzmanlikAlani, int HastaneId, int PoliklinikId, bool AktifMi);
 
 public record DoktorDetayDto(
 	DoktorDto Doktor,

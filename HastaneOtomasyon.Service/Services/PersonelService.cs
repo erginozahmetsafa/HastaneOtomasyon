@@ -18,6 +18,7 @@ internal sealed class PersonelService(
 	IHastaneRepository hastaneRepository,
 	IGenericRepository<Poliklinik> poliklinikRepository,
 	IHizmetRepository hizmetRepository,
+	IRandevuRepository randevuRepository,
 	KisiFabrikasi kisiFabrikasi,
 	IUnitOfWork unitOfWork,
 	IAktifKullanici aktifKullanici,
@@ -124,6 +125,45 @@ internal sealed class PersonelService(
 
 		doktorRepository.DoktorHizmetKaldir(doktorHizmet);
 		await unitOfWork.SaveChangesAsync(ct);
+	}
+
+	public async Task<PasiflestirmeSonucuDto> PasiflestirAsync(int calisanId, CancellationToken ct = default)
+	{
+		var calisan = await calisanRepository.GetByIdOrThrowAsync(calisanId, ct);
+		PersoneliYonetebilmeli(calisan);
+
+		calisan.Pasiflestir();
+
+		// Ayrılan doktorun ileri tarihli randevuları hastalar beklemede kalmasın diye iptal edilir.
+		var iptalEdilen = 0;
+		if (calisan is Doktor)
+		{
+			var simdi = zaman.GetLocalNow().DateTime;
+			var randevular = await randevuRepository.GetGelecekAktifRandevularAsync(calisan.Id, simdi, ct);
+			foreach (var randevu in randevular)
+				randevu.IptalEt("Doktor kurumdan ayrıldığı için randevu iptal edildi.", simdi);
+			iptalEdilen = randevular.Count;
+		}
+
+		await unitOfWork.SaveChangesAsync(ct);
+		return new PasiflestirmeSonucuDto(iptalEdilen);
+	}
+
+	public async Task AktiflestirAsync(int calisanId, CancellationToken ct = default)
+	{
+		var calisan = await calisanRepository.GetByIdOrThrowAsync(calisanId, ct);
+		PersoneliYonetebilmeli(calisan);
+
+		calisan.Aktiflestir();
+		await unitOfWork.SaveChangesAsync(ct);
+	}
+
+	// Hastane yöneticisi kendi hastanesinin personelini yönetir; yönetici rolündekileri yalnızca sistem yöneticisi.
+	private void PersoneliYonetebilmeli(Calisan calisan)
+	{
+		aktifKullanici.HastaneYonetebilmeli(calisan.HastaneId);
+		if (calisan is Yonetici)
+			aktifKullanici.RolOlmali(Roller.SistemYoneticisi);
 	}
 
 	// Tüm çalışan türleri için ortak adımlar: yetki, hastane kontrolü ve ortak alanlar.

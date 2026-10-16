@@ -8,16 +8,17 @@ namespace HastaneOtomasyon.API.Security;
 
 public interface ITokenUretici
 {
-	GirisYanitiDto Uret(KullaniciDto kullanici);
+	GirisYanitiDto Uret(OturumBilgisi oturum);
 }
 
 public sealed class JwtTokenUretici(IOptions<JwtAyarlari> ayarlar) : ITokenUretici
 {
 	private readonly JsonWebTokenHandler handler = new();
 
-	public GirisYanitiDto Uret(KullaniciDto kullanici)
+	public GirisYanitiDto Uret(OturumBilgisi oturum)
 	{
 		var jwt = ayarlar.Value;
+		var kullanici = oturum.Kullanici;
 		var simdi = DateTime.UtcNow;
 		var bitis = simdi.AddMinutes(jwt.SureDakika);
 
@@ -26,7 +27,8 @@ public sealed class JwtTokenUretici(IOptions<JwtAyarlari> ayarlar) : ITokenUreti
 			[ClaimTipleri.Id] = kullanici.Id.ToString(),
 			[ClaimTipleri.Rol] = kullanici.Rol.ToString(),
 			[ClaimTipleri.AdSoyad] = $"{kullanici.Ad} {kullanici.Soyad}",
-			[ClaimTipleri.Email] = kullanici.Email
+			[ClaimTipleri.Email] = kullanici.Email,
+			[ClaimTipleri.GuvenlikDamgasi] = oturum.GuvenlikDamgasi.ToString()
 		};
 		if (kullanici.HastaneId is int hastaneId)
 			claimler[ClaimTipleri.HastaneId] = hastaneId.ToString();

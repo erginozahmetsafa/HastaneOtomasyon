@@ -14,21 +14,23 @@ public class DoktorRepository(AppDbContext context) : GenericRepository<Doktor>(
 			.AsSplitQuery()
 			.FirstOrDefaultAsync(d => d.Id == id, ct);
 
+	// Randevu seçimine yönelik listeler yalnızca aktif doktorları içerir.
 	public async Task<IReadOnlyList<Doktor>> GetByPoliklinikAsync(int poliklinikId, CancellationToken ct = default) =>
 		await Set.AsNoTracking()
-			.Where(d => d.PoliklinikId == poliklinikId)
+			.Where(d => d.PoliklinikId == poliklinikId && d.AktifMi)
 			.OrderBy(d => d.Ad).ThenBy(d => d.Soyad)
 			.ToListAsync(ct);
 
 	public async Task<IReadOnlyList<Doktor>> GetByHizmetAsync(int hizmetId, CancellationToken ct = default) =>
 		await Set.AsNoTracking()
-			.Where(d => d.DoktorHizmetler.Any(dh => dh.HizmetId == hizmetId))
+			.Where(d => d.AktifMi && d.DoktorHizmetler.Any(dh => dh.HizmetId == hizmetId))
 			.OrderBy(d => d.Ad).ThenBy(d => d.Soyad)
 			.ToListAsync(ct);
 
 	public Task<DoktorHizmet?> GetDoktorHizmetAsync(int doktorId, int hizmetId, CancellationToken ct = default) =>
 		Context.DoktorHizmetler.AsNoTracking()
 			.Include(dh => dh.Hizmet)
+			.Include(dh => dh.Doktor)
 			.FirstOrDefaultAsync(dh => dh.DoktorId == doktorId && dh.HizmetId == hizmetId, ct);
 
 	public async Task DoktorHizmetEkleAsync(DoktorHizmet doktorHizmet, CancellationToken ct = default) =>

@@ -32,6 +32,14 @@ public class RandevuRepository(AppDbContext context) : GenericRepository<Randevu
 			.OrderBy(r => r.Baslangic)
 			.ToListAsync(ct);
 
+	public async Task<IReadOnlyList<Randevu>> GetGelecekAktifRandevularAsync(int doktorId, DateTime simdi, CancellationToken ct = default) =>
+		await Set
+			.Where(r =>
+				r.DoktorId == doktorId &&
+				r.Baslangic > simdi &&
+				(r.Durum == RandevuDurum.Bekliyor || r.Durum == RandevuDurum.Onaylandi))
+			.ToListAsync(ct);
+
 	public Task<bool> DoktorCakismaVarMiAsync(int doktorId, DateTime baslangic, DateTime bitis, int? haricRandevuId = null, CancellationToken ct = default) =>
 		CakismaVarMiAsync(r => r.DoktorId == doktorId, baslangic, bitis, haricRandevuId, ct);
 

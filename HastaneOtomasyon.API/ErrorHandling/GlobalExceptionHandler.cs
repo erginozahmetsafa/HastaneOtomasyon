@@ -22,6 +22,7 @@ internal sealed class GlobalExceptionHandler(
 			IsKuraliException => (StatusCodes.Status400BadRequest, "İş kuralı ihlali", exception.Message),
 			YetkisizIslemException when !girisYapmis => (StatusCodes.Status401Unauthorized, "Giriş gerekli", exception.Message),
 			YetkisizIslemException => (StatusCodes.Status403Forbidden, "Yetkisiz işlem", exception.Message),
+			EszamanliIslemException => (StatusCodes.Status409Conflict, "Eşzamanlı işlem", exception.Message),
 			DbUpdateException => (StatusCodes.Status409Conflict, "Kayıt çakışması", "Kayıt, mevcut verilerle çakıştığı için kaydedilemedi."),
 			_ => (StatusCodes.Status500InternalServerError, "Sunucu hatası", "Beklenmeyen bir hata oluştu.")
 		};

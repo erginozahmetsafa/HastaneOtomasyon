@@ -3,6 +3,13 @@ using HastaneOtomasyon.Core.Enums;
 
 namespace HastaneOtomasyon.Core.DTOs;
 
+// Kayıt ve şifre değiştirmede ortak şifre politikası: en az 8 karakter, en az bir harf ve bir rakam.
+internal static class SifreKurali
+{
+	public const string Desen = @"^(?=.*[A-Za-zÇĞİÖŞÜçğıöşü])(?=.*\d).{8,100}$";
+	public const string Mesaj = "Şifre en az 8 karakter olmalı ve en az bir harf ile bir rakam içermelidir.";
+}
+
 // ---- Girdi ----
 
 public abstract record KisiKayitDto
@@ -22,7 +29,7 @@ public abstract record KisiKayitDto
 	[Phone, StringLength(20)]
 	public string? Telefon { get; init; }
 
-	[Required, StringLength(100, MinimumLength = 6)]
+	[Required, RegularExpression(SifreKurali.Desen, ErrorMessage = SifreKurali.Mesaj)]
 	public string Sifre { get; init; } = string.Empty;
 }
 
@@ -77,8 +84,22 @@ public record GirisDto
 	public string Sifre { get; init; } = string.Empty;
 }
 
+public record SifreDegistirDto
+{
+	[Required]
+	public string MevcutSifre { get; init; } = string.Empty;
+
+	[Required, RegularExpression(SifreKurali.Desen, ErrorMessage = SifreKurali.Mesaj)]
+	public string YeniSifre { get; init; } = string.Empty;
+}
+
 // ---- Çıktı ----
 
 public record KullaniciDto(int Id, string Ad, string Soyad, string Email, Roller Rol, int? HastaneId);
 
-public record PersonelDto(int Id, string Ad, string Soyad, string Email, string? Telefon, Roller Rol, int HastaneId);
+// Oturum açan katmanın (API) token üretmesi için gereken bilgi. Güvenlik damgası istemciye ayrıca gösterilmez.
+public record OturumBilgisi(KullaniciDto Kullanici, Guid GuvenlikDamgasi);
+
+public record PersonelDto(int Id, string Ad, string Soyad, string Email, string? Telefon, Roller Rol, int HastaneId, bool AktifMi);
+
+public record PasiflestirmeSonucuDto(int IptalEdilenRandevuSayisi);
