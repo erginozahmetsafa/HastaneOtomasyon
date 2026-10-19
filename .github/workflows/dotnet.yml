@@ -1,0 +1,30 @@
+# Her push ve pull request'te projeyi derler ve birim testlerini çalıştırır.
+name: Derleme ve Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  derle-ve-test-et:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 8 kurulumu
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # .slnx çözüm dosyası .NET 9.0.200+ SDK gerektirdiğinden projeler doğrudan derlenir.
+      # API projesi Core, Data ve Service katmanlarını da derler.
+      - name: Derleme
+        run: |
+          dotnet build HastaneOtomasyon.API/HastaneOtomasyon.API.csproj --configuration Release
+          dotnet build HastaneOtomasyon.UnitTests/HastaneOtomasyon.UnitTests.csproj --configuration Release
+
+      - name: Birim testleri
+        run: dotnet test HastaneOtomasyon.UnitTests/HastaneOtomasyon.UnitTests.csproj --configuration Release --no-build --logger "console;verbosity=normal"

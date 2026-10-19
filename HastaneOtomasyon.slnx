@@ -3,4 +3,5 @@
   <Project Path="HastaneOtomasyon.Core/HastaneOtomasyon.Core.csproj" Id="90af9708-17b5-4f2e-a6c8-67388bb67c18" />
   <Project Path="HastaneOtomasyon.Data/HastaneOtomasyon.Data.csproj" Id="d95a8792-eb3f-41ba-9667-85c50ff12cbe" />
   <Project Path="HastaneOtomasyon.Service/HastaneOtomasyon.Service.csproj" Id="472709a5-c773-4b47-ad66-87c3693f4b88" />
+  <Project Path="HastaneOtomasyon.UnitTests/HastaneOtomasyon.UnitTests.csproj" />
 </Solution>
