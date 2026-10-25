@@ -5,7 +5,8 @@ namespace HastaneOtomasyon.Core.Services;
 public interface IHizmetService
 {
 	Task<IReadOnlyList<HizmetDto>> GetByPoliklinikAsync(int poliklinikId, CancellationToken ct = default);
-	Task<IReadOnlyList<HizmetDto>> GetByHastaneAsync(int hastaneId, CancellationToken ct = default);
+	// pasiflerDahil: kullanımdan kaldırılmış hizmetler de döner (yönetim ekranı için; hastane yöneticisi yetkisi gerekir).
+	Task<IReadOnlyList<HizmetDto>> GetByHastaneAsync(int hastaneId, bool pasiflerDahil = false, CancellationToken ct = default);
 
 	// Sistem yöneticisi veya o hastanenin yöneticisi.
 	// Hizmetler silinmez (randevu geçmişi); AktifMi = false ile kullanımdan kaldırılır.

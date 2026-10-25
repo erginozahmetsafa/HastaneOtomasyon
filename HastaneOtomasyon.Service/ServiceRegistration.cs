@@ -23,6 +23,15 @@ public static class ServiceRegistration
 		services.AddScoped<IMusaitlikService, MusaitlikService>();
 		services.AddScoped<IRandevuService, RandevuService>();
 
+		services.AddScoped<DemoVeriTohumlayici>();
+
 		return services;
+	}
+
+	// Geliştirme ortamında örnek kurum ve hesapları ekler (bkz. DemoVeriTohumlayici). Tekrar çağrılması güvenlidir.
+	public static async Task DemoVerileriniEkleAsync(this IServiceProvider services, CancellationToken ct = default)
+	{
+		await using var scope = services.CreateAsyncScope();
+		await scope.ServiceProvider.GetRequiredService<DemoVeriTohumlayici>().TohumlaAsync(ct);
 	}
 }

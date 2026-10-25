@@ -19,6 +19,7 @@ app.UseStatusCodePages(); // 401/403/404 gibi gövdesiz yanıtlar da ProblemDeta
 if (app.Environment.IsDevelopment())
 {
 	await app.Services.VeritabaniniGuncelleAsync();
+	await app.Services.DemoVerileriniEkleAsync();
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }

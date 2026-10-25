@@ -31,11 +31,14 @@ public class HastanelerController(
 	public async Task<IReadOnlyList<PoliklinikDto>> GetPoliklinikler(int id, CancellationToken ct) =>
 		await poliklinikService.GetByHastaneAsync(id, ct);
 
-	/// <summary>Hastanenin sunduğu aktif hizmetler (süre ve ücretleriyle).</summary>
+	/// <summary>
+	/// Hastanenin sunduğu aktif hizmetler (süre ve ücretleriyle).
+	/// pasiflerDahil=true ile kullanımdan kaldırılanlar da döner; bu durumda hastane yöneticisi yetkisi gerekir.
+	/// </summary>
 	[HttpGet("{id:int}/hizmetler")]
 	[AllowAnonymous]
-	public async Task<IReadOnlyList<HizmetDto>> GetHizmetler(int id, CancellationToken ct) =>
-		await hizmetService.GetByHastaneAsync(id, ct);
+	public async Task<IReadOnlyList<HizmetDto>> GetHizmetler(int id, [FromQuery] bool pasiflerDahil, CancellationToken ct) =>
+		await hizmetService.GetByHastaneAsync(id, pasiflerDahil, ct);
 
 	/// <summary>Yeni hastane/şube tanımlar.</summary>
 	[HttpPost]

@@ -18,8 +18,13 @@ internal sealed class HizmetService(
 	public async Task<IReadOnlyList<HizmetDto>> GetByPoliklinikAsync(int poliklinikId, CancellationToken ct = default) =>
 		(await hizmetRepository.GetByPoliklinikAsync(poliklinikId, ct: ct)).Select(h => h.ToDto()).ToList();
 
-	public async Task<IReadOnlyList<HizmetDto>> GetByHastaneAsync(int hastaneId, CancellationToken ct = default) =>
-		(await hizmetRepository.GetByHastaneAsync(hastaneId, ct: ct)).Select(h => h.ToDto()).ToList();
+	public async Task<IReadOnlyList<HizmetDto>> GetByHastaneAsync(int hastaneId, bool pasiflerDahil = false, CancellationToken ct = default)
+	{
+		if (pasiflerDahil)
+			aktifKullanici.HastaneYonetebilmeli(hastaneId);
+
+		return (await hizmetRepository.GetByHastaneAsync(hastaneId, sadeceAktif: !pasiflerDahil, ct)).Select(h => h.ToDto()).ToList();
+	}
 
 	public async Task<HizmetDto> OlusturAsync(HizmetOlusturDto dto, CancellationToken ct = default)
 	{
